@@ -17,7 +17,7 @@ graph_connectivity = nx.node_connectivity(G)
 min_wieght_edge = nx.stoer_wagner(G)
 print(min_wieght_edge)
 
-lower_K = 2
+lower_K = 1
 # code to decrease the connectivity
 while(graph_connectivity!=lower_K):
     print("m here1")
@@ -29,7 +29,11 @@ while(graph_connectivity!=lower_K):
     print("m here4")
 
 print(graph_connectivity)
-
+nx.draw(G, pos=nx.circular_layout(G))
+nx.draw_networkx_labels(G, pos=nx.circular_layout(G))
+labels = nx.get_edge_attributes(G, 'weight')
+nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), edge_labels=labels)
+plt.savefig('roads.png')
     
 
 
