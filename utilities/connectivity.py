@@ -8,9 +8,9 @@ elist = [((1,1), (1,2), 1.3),
          ((2,1), (2,2), 1.2), 
          ((1,1), (2,2), 0.7)]
 G.add_weighted_edges_from(elist)
-max_wieght = max(dict(G.edges).items(), key=lambda x: x[1]['weight'])
+max_wieght = min(dict(G.edges).items(), key=lambda x: x[1]['weight'])
 print("max_wieght")
-print(max_wieght[0][0])
+print(max_wieght)
 # finds overall connectivity of the graph
 graph_connectivity = nx.node_connectivity(G)
 # print(graph_connectivity)
@@ -21,7 +21,7 @@ lower_K = 1
 # code to decrease the connectivity
 while(graph_connectivity!=lower_K):
     print("m here1")
-    max_wieght = max(dict(G.edges).items(), key=lambda x: x[1]['weight'])
+    max_wieght = min(dict(G.edges).items(), key=lambda x: x[1]['weight'])
     print("m here2")
     G.remove_edge(max_wieght[0][0], max_wieght[0][1])
     print("m here3")
