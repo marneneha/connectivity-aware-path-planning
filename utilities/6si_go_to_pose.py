@@ -2,6 +2,7 @@
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
+from math import dist
 
 # Initial_pose_of_robots = 
 np_Initial_pose_of_robots = np.array([[4,0,2,1.73,-2,1.73,-4,0,-2,-1.73,2,-1.73]])
@@ -38,11 +39,28 @@ def si_model():
     ax.set_ylim(ymin=-4)
     plt.show()
 
-si_model()
-G = nx.Graph()
-arr = np.reshape(np_Initial_pose_of_robots, (6,2))
-G.add_nodes_from(list(map(tuple, arr)))
-nx.draw(G, pos=nx.circular_layout(G), with_labels = True)
-plt.savefig('6SI_robots.png')
-print(G)
-print(list(map(tuple, arr)))
+def update_graph(current_pose_of_robots):
+    # reinitialize the graph 
+    Rc=4
+    G = nx.Graph()
+    arr = np.reshape(current_pose_of_robots, (6,2))
+    current_node_poses = list(map(tuple, arr))
+    print(current_node_poses)
+    G.add_nodes_from(current_node_poses)
+    for i in current_node_poses:
+        for j in current_node_poses:
+            if(dist(i,j)<=Rc and i!=j):
+                G.add_edge(i,j)
+
+        print("i am here")
+        print(i)
+    # G.add_edge()
+    # G.add_edge((i,j)for (i,j) in (current_pose_i, current_pose_j): if(dist(current_pose_i,current_pose_j)<1))
+    nx.draw(G, pos=nx.circular_layout(G), with_labels = True)
+    plt.savefig('6SI_robots.png')
+    print(G)
+    print(list(map(tuple, arr)))
+update_graph(previous_pose_of_robots)
+# si_model()
+
+# (i) for i in my_list if i=="two"]
