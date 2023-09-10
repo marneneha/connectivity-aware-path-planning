@@ -29,6 +29,7 @@ def si_model():
         previous_pose_of_robots = current_pose_of_robots
         trajectory = np.append(trajectory,current_pose_of_robots, axis=0)
     print(trajectory)
+    update_graph(current_pose_of_robots)
     f, ax = plt.subplots(1)
     ax.plot(trajectory[:,0], trajectory[:,1], color='r', label='robot1')
     ax.plot(trajectory[:,2], trajectory[:,3], color='g', label='robot2')
@@ -61,6 +62,4 @@ def update_graph(current_pose_of_robots):
     print(G)
     print(list(map(tuple, arr)))
 update_graph(previous_pose_of_robots)
-# si_model()
-
-# (i) for i in my_list if i=="two"]
+si_model()
