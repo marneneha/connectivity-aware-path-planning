@@ -15,6 +15,7 @@ x0 = np.array([1,0,1,0,1,0,1,0,1,0,1,0])
 
 # set objective
 obj =0
+Rs=0
 for i in range(12):
     obj = obj+((u[i]-u_ref[i])*(u[i]-u_ref[i]))
 # obj = ( for i in range(12) )
@@ -28,14 +29,16 @@ m.setObjective(obj, GRB.MINIMIZE)
 # # dynamics constraints
 for i in range(12):
     m.addConstr(x1[i] == x0[i]+u[i]*0.1)
-        # x1 ==[0,0,0,0,0,0,0,0,0,0,0,0]+u*0.1)
 
 # safety constraints
-# for i,j in range(12):
-#     m.addGenConstrNorm(np.linalg.norm(x1[i]-x1[j])>1)
-# # connectivity constraints
-# # m.addConstr(np.linalg.norm(x-x)<Rc)
-# # m.addConstr(np.linalg.norm(x-x)>Rdc)
+for i in range(12):
+    for j in range(12):
+        if(i != j): 
+            m.addConstr((x1[i]-x1[j])>=Rs)
+
+# connectivity constraints
+# m.addConstr(np.linalg.norm(x-x)<Rc)
+# m.addConstr(np.linalg.norm(x-x)>Rdc)
 
 
 m.optimize()
