@@ -13,17 +13,12 @@ obj = m.addVar(name="obj")
 u_ref = np.array([1,0,1,0,1,0,1,0,1,0,1,0])
 x0 = np.array([1,0,1,0,1,0,1,0,1,0,1,0])
 
-# set objective
 obj =0
 Rs=0
+Rc=0.5
+# set objective
 for i in range(12):
     obj = obj+((u[i]-u_ref[i])*(u[i]-u_ref[i]))
-# obj = ( for i in range(12) )
-# GRBQuadExpr operator-(GRBQuadExpr u_ref,GRBQuadExpr u)
-# obj = gp.norm(u-[1,0,1,0,1,0,1,0,1,0,1,0])
-# m.addGenConstrNorm(obj, u_diff, 2.0, "normconstr")
-# obj = np.linalg.norm(u-u_ref)**2
-# print(obj)
 m.setObjective(obj, GRB.MINIMIZE)
 
 # # dynamics constraints
@@ -37,7 +32,12 @@ for i in range(12):
             m.addConstr((x1[i]-x1[j])>=Rs)
 
 # connectivity constraints
-# m.addConstr(np.linalg.norm(x-x)<Rc)
+for i in range(12):
+    for j in range(12):
+        if(i != j): 
+            m.addConstr((x1[i]-x1[j])<=Rc)
+
+# disconnectivity constraints
 # m.addConstr(np.linalg.norm(x-x)>Rdc)
 
 
