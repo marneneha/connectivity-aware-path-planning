@@ -7,15 +7,13 @@ m = gp.Model("qcp")
 m.params.NonConvex = 2
 
 # Create variables
-# lb= np.array([[-5,-5],[-5,-5],[-5,-5],[-5,-5],[-5,-5],[-5,-5]]), 
-u = m.addMVar(shape=(12, ), vtype=GRB.CONTINUOUS, name="u")
-# u_given = m.addVar(name="u_given")
-# x0 = m.addVar(name="x0")
-x1 = m.addVar(name="x1")
+u = m.addMVar(lb= np.array([-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5,-5]), shape=(12, ), vtype=GRB.CONTINUOUS, name="u")
+x1 = m.addMVar(shape=(12, ), vtype=GRB.CONTINUOUS, name="x1")
 obj = m.addVar(name="obj")
-u_diff = m.addVar(name="u_diff")
-# u_diff = u-np.array([1,0,1,0,1,0,1,0,1,0,1,0])
 u_ref = np.array([1,0,1,0,1,0,1,0,1,0,1,0])
+x0 = np.array([1,0,1,0,1,0,1,0,1,0,1,0])
+
+# set objective
 obj =0
 for i in range(12):
     obj = obj+((u[i]-u_ref[i])*(u[i]-u_ref[i]))
@@ -26,11 +24,15 @@ for i in range(12):
 # obj = np.linalg.norm(u-u_ref)**2
 # print(obj)
 m.setObjective(obj, GRB.MINIMIZE)
+
 # # dynamics constraints
-# m.addConstr(x1 ==[[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]+u*0.1)
-# # # safety constraints
-for i,j in range(12):
-    m.addGenConstrNorm(np.linalg.norm(x1[i]-x1[j])>1)
+for i in range(12):
+    m.addConstr(x1[i] == x0[i]+u[i]*0.1)
+        # x1 ==[0,0,0,0,0,0,0,0,0,0,0,0]+u*0.1)
+
+# safety constraints
+# for i,j in range(12):
+#     m.addGenConstrNorm(np.linalg.norm(x1[i]-x1[j])>1)
 # # connectivity constraints
 # # m.addConstr(np.linalg.norm(x-x)<Rc)
 # # m.addConstr(np.linalg.norm(x-x)>Rdc)
