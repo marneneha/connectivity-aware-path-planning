@@ -8,8 +8,8 @@ m = gp.Model("qcp")
 m.params.NonConvex = 2
 # ,ub= np.array([5,5,5,5,5,5,5,5,5,5,5,5])
 # Create variables
-ux = m.addMVar(lb= np.array([-5,-5,-5,-5,-5,-5]), shape=(6, ), vtype=GRB.CONTINUOUS, name="ux")
-uy = m.addMVar(lb= np.array([-5,-5,-5,-5,-5,-5]), shape=(6, ), vtype=GRB.CONTINUOUS, name="uy")
+ux = m.addMVar(lb= np.array([-20,-20,-20,-20,-20,-20]), shape=(6, ), vtype=GRB.CONTINUOUS, name="ux")
+uy = m.addMVar(lb= np.array([-20,-20,-20,-20,-20,-20]), shape=(6, ), vtype=GRB.CONTINUOUS, name="uy")
 x1 = m.addMVar(shape=(6, ), vtype=GRB.CONTINUOUS, name="x1")
 y1 = m.addMVar(shape=(6, ), vtype=GRB.CONTINUOUS, name="y1")
 obj = m.addVar(name="obj")
@@ -17,11 +17,12 @@ ux_ref = np.array([1,1,1,1,1,1])
 uy_ref = np.array([0,0,0,0,0,0])
 x0 = np.array([4,2,-2,-4,-2,2])
 y0 = np.array([0,1.73,1.73,0,-1.73,-1.73])
-disconnected_set = np.array([1,2])
-connected_set = np.array([3,4,5,6,])
+disconnected_set = np.array([0,1])
+connected_set = np.array([2,3,4,5])
 obj=0
 Rs=0
-Rc=0.5
+Rc=4
+Rdc=6
 # set objective
 for i in range(6):
     obj = obj+((ux[i]-ux_ref[i])*(ux[i]-ux_ref[i])) + ((uy[i]-uy_ref[i])*(uy[i]-uy_ref[i]))
@@ -39,14 +40,16 @@ for i in range(6):
             m.addConstr(((x1[i]-x1[j])*(x1[i]-x1[j]))+((y1[i]-y1[j])*(y1[i]-y1[j]))>=Rs)
 
 # connectivity constraints
-# for i in range(12):
-#     for j in range(12):
-#         if(i != j): 
-#             m.addConstr((x1[i]-x1[j])<=Rc)
+for i in connected_set:
+    for j in connected_set:
+        if(i != j): 
+            m.addConstr(((x1[i]-x1[j])*(x1[i]-x1[j]))+((y1[i]-y1[j])*(y1[i]-y1[j]))<=Rc)
 
 # disconnectivity constraints
-# m.addConstr(np.linalg.norm(x-x)>Rdc)
-
+for i in disconnected_set:
+    for j in disconnected_set:
+        if(i != j): 
+            m.addConstr(((x1[i]-x1[j])*(x1[i]-x1[j]))+((y1[i]-y1[j])*(y1[i]-y1[j]))>=Rdc)
 
 m.optimize()
 print(m.SolCount)
