@@ -10,20 +10,24 @@ m.params.NonConvex = 2
 # Create variables
 ux = m.addMVar(lb= np.array([-20,-20,-20,-20,-20,-20]), shape=(6, ), vtype=GRB.CONTINUOUS, name="ux")
 uy = m.addMVar(lb= np.array([-20,-20,-20,-20,-20,-20]), shape=(6, ), vtype=GRB.CONTINUOUS, name="uy")
-x1 = m.addMVar(shape=(6, ), vtype=GRB.CONTINUOUS, name="x1")
-y1 = m.addMVar(shape=(6, ), vtype=GRB.CONTINUOUS, name="y1")
+x1 = m.addMVar(lb= np.array([-20,-20,-20,-20,-20,-20]), shape=(6, ), vtype=GRB.CONTINUOUS, name="x1")
+y1 = m.addMVar(lb= np.array([-20,-20,-20,-20,-20,-20]), shape=(6, ), vtype=GRB.CONTINUOUS, name="y1")
 obj = m.addVar(name="obj")
 ux_ref = np.array([1,1,1,1,1,1])
 uy_ref = np.array([0,0,0,0,0,0])
 x0 = np.array([4,2,-2,-4,-2,2])
 y0 = np.array([0,1.73,1.73,0,-1.73,-1.73])
+trajectory = np.array([x0,y0])
+print("trajectory is", trajectory)
 disconnected_set = np.array([0,1])
 connected_set = np.array([2,3,4,5])
 obj=0
-Rs=0
+Rs=0.5
 Rc=4
 Rdc=6
 # set objective
+# def cal_next_wp():
+    
 for i in range(6):
     obj = obj+((ux[i]-ux_ref[i])*(ux[i]-ux_ref[i])) + ((uy[i]-uy_ref[i])*(uy[i]-uy_ref[i]))
 m.setObjective(obj, GRB.MINIMIZE)
@@ -52,14 +56,28 @@ for i in disconnected_set:
             m.addConstr(((x1[i]-x1[j])*(x1[i]-x1[j]))+((y1[i]-y1[j])*(y1[i]-y1[j]))>=Rdc)
 
 m.optimize()
-print(m.SolCount)
+print("solution count is", m.SolCount)
+global new_wp
+new_wp = []
 for v in m.getVars():
     # print("i am here")
-    print('%s %g' % (v.VarName, v.X))
+    # new_wp = []
+    print("variable name is ", '%s %g' % (v.VarName, v.X))
+    if(v.VarName[0]=='x' or v.VarName[0]=='y'):
+        new_wp.append(v.X)
+# new_wp.reshape(2,6)
+print("i am here")
+print(new_wp)
+print("i am here1")
+np_new_wp = np.reshape(new_wp,(2,6))
+np.append(trajectory, np_new_wp, axis=0)
+print(trajectory)
+print("i am here2")
+print(np.reshape(new_wp,(2,6)))
 
 print('Obj: %g' % obj.getValue())
-print(ux_ref)
-print(uy_ref)
+# print(x1)
+# print(y1)``
 f, ax = plt.subplots(1)
 circle1 = plt.Circle((x0[0], y0[0]),0.05,color='r')
 circle2 = plt.Circle((x0[1], y0[1]),0.05,color='r')
@@ -81,4 +99,6 @@ ax.add_patch(circle6)
 # ax.plot(x0[10], x0[11], color='magenta', label='robot6')
 ax.set_ylim(ymin=-5, ymax=8)
 ax.set_xlim(xmin=-5, xmax=8)
+print(trajectory)
+plt.scatter(trajectory[0,:],trajectory[1,:], color='black')
 plt.show()
